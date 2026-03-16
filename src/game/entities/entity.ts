@@ -15,6 +15,4 @@ export abstract class Entity {
     this.y = y;
     this.size = size;
   }
-
-  abstract update({ ...args }): void;
 }

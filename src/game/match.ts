@@ -11,7 +11,7 @@ export class Match {
   private world_height = 1200;
 
   constructor(readonly users: User[]) {
-    this.engine = new GameEngine(this, this.world_height, this.world_width);
+    this.engine = new GameEngine(this, this.world_width, this.world_height);
   }
 
   start() {

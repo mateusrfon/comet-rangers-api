@@ -20,7 +20,7 @@ export type ServerMessage =
   | { type: "room_created"; roomId: string }
   | { type: "room_joined"; roomId: string }
   | { type: "room_not_found" }
-  | { type: "game_started"; worldHeight: number; worldWidth: number }
+  | { type: "game_started"; worldWidth: number; worldHeight: number }
   | { type: "broadcast"; state: ClientState };
 
 export function decodeMessage(data: string): any {

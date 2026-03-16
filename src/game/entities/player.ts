@@ -1,8 +1,7 @@
-import { StringifyOptions } from "node:querystring";
-import { InputState } from "../types";
+import { Input, InputState } from "../types";
 import { Entity } from "./entity";
 
-interface PlayerConfig {
+type PlayerConfig = {
   id: string;
   x: number;
   y: number;
@@ -10,11 +9,18 @@ interface PlayerConfig {
   accel?: number;
   rot?: number;
   life?: number;
-}
+};
 
 export class Player extends Entity {
   id: string;
-  public inputQueue: InputState[] = [];
+  public inputQueue: InputState = new Map();
+  public lastInput: Input = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    shoot: false,
+  };
 
   life: number;
   score = 0;
@@ -26,8 +32,8 @@ export class Player extends Entity {
 
   friction = 0.99;
 
-  shootCooldown = 0.1;
-  currentShootCooldown = 0;
+  shootCooldown = 6; // 0.1s * tick_rate
+  lastShot = this.shootCooldown * -1;
 
   respawnCooldown = 3;
   currentRespawnCooldown = this.respawnCooldown;
@@ -61,7 +67,12 @@ export class Player extends Entity {
     this.spawn = { x, y, angle };
   }
 
-  getWorldVertices() {
+  canShoot(tick: number): boolean {
+    const timeSinceLastShot = tick - this.lastShot;
+    return timeSinceLastShot >= this.shootCooldown;
+  }
+
+  getWorldVertices(): { x: number; y: number }[] {
     const cos = Math.cos(this.angle);
     const sin = Math.sin(this.angle);
     return this.localVertices.map((v) => ({
@@ -70,6 +81,7 @@ export class Player extends Entity {
     }));
   }
 
+  // go to collisionSystem
   public applyImpulse(ix: number, iy: number, hitX: number, hitY: number) {
     // impulso linear
     this.vx += ix; // Should divide by mass if we had it, but we'll assume mass = 1 for simplicity
@@ -83,53 +95,7 @@ export class Player extends Entity {
     this.angularVelocity += torque * 0.001; // Fine adjustment factor for feel
   }
 
-  update({ delta, input }: { delta: number; input: InputState }): {
-    shoot: boolean;
-  } {
-    const response = {
-      shoot: false,
-    };
-
-    if (this.life > 0 && this.currentRespawnCooldown <= 0) {
-      this.currentRespawnCooldown = this.respawnCooldown;
-      this.respawn();
-    }
-    if (this.isAlive == false) {
-      this.currentRespawnCooldown -= delta;
-      return response;
-    }
-
-    this.currentShootCooldown -= delta;
-
-    // Rotation
-    if (input.left) this.angle -= this.rotationSpeed;
-    if (input.right) this.angle += this.rotationSpeed;
-
-    if (input.up) {
-      this.vx += Math.cos(this.angle) * this.acceleration;
-      this.vy += Math.sin(this.angle) * this.acceleration;
-    }
-
-    // Apply friction
-    this.vx *= this.friction;
-    this.vy *= this.friction;
-
-    // Update position based on velocity
-    this.x += this.vx;
-    this.y += this.vy;
-
-    // Update angle based on angular velocity
-    this.angle += this.angularVelocity;
-    this.angularVelocity *= 0.98;
-
-    if (input.shoot && this.currentShootCooldown <= 0) {
-      response.shoot = true;
-      this.currentShootCooldown = this.shootCooldown; // Reset cooldown
-    }
-
-    return response;
-  }
-
+  // go to respawnSystem
   respawn() {
     this.x = this.spawn.x;
     this.y = this.spawn.y;
@@ -139,6 +105,5 @@ export class Player extends Entity {
     this.angularVelocity = 0;
     this.isAlive = true;
     this.life -= 1;
-    this.currentShootCooldown = 0;
   }
 }

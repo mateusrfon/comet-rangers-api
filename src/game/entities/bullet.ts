@@ -4,10 +4,12 @@ export class Bullet extends Entity {
   lifetime = 1;
   prevX: number;
   prevY: number;
-  ownerId: number;
+  ownerId: string;
+
+  // initial tick to prevent self hit on shoot but allow after travel
 
   constructor(
-    ownerId: number,
+    ownerId: string,
     x: number,
     y: number,
     vx: number,
@@ -32,10 +34,5 @@ export class Bullet extends Entity {
       this.isAlive = false;
       return;
     }
-    this.prevX = this.x;
-    this.prevY = this.y;
-
-    this.x += this.vx;
-    this.y += this.vy;
   }
 }

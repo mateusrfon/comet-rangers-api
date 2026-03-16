@@ -3,6 +3,7 @@ import { Player } from "./entities/player";
 import { LevelDefinition, LEVELS } from "./levels";
 import { Match } from "./match";
 import { State } from "./state";
+import { PhysicsSystem } from "./systems/physicsSystem";
 
 export class GameEngine {
   private state = new State();
@@ -13,14 +14,18 @@ export class GameEngine {
 
   private tick_rate = 60;
   private tick_interval = 1000 / this.tick_rate; // ms interval of 60hz
+  private physicsSystem: PhysicsSystem;
 
   constructor(
     private match: Match,
-    private world_height: number,
     private world_width: number,
+    private world_height: number,
   ) {
-    this.world_width = world_width;
-    this.world_height = world_height;
+    this.physicsSystem = new PhysicsSystem(
+      this.state,
+      world_width,
+      world_height,
+    );
   }
 
   start() {
@@ -86,11 +91,12 @@ export class GameEngine {
   }
 
   private update() {
-    // 2. Update physics (with inputs from player as well)
-    // 3. Detect collisions
-    // 4. Cleanup entities
-    // 5. Build snapshot
-    // 6. Broadcast
+    // 1. Update physics (with inputs from player as well)
+    this.physicsSystem.updatePositions();
+    // 2. Detect collisions
+    // 3. Cleanup entities
+    // 4. Build snapshot
+    // 5. Broadcast
     this.match.broadcast({
       type: "broadcast",
       state: { ...this.state, players: [...this.state.players.values()] },
