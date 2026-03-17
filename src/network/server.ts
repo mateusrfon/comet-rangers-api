@@ -1,7 +1,8 @@
-import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer } from "ws";
 import { RoomManager } from "../domain/roomManager";
 import { IncomingMessage } from "http";
 import { User } from "../domain/user";
+import { Connection } from "./connection";
 
 export class Server {
   private wsServer: WebSocketServer;
@@ -17,20 +18,23 @@ export class Server {
 
     this.wsServer.on("connection", (ws, req) => {
       const params = this.getParams(req);
-
-      const user = this.setUser(ws, params);
+      const connection = new Connection(ws, params);
+      const user = this.setUser(connection, params);
       console.log(`Client connected: ${user.id}`);
     });
   }
 
-  setUser(ws: WebSocket, params: { userId?: string; roomId?: string }) {
+  setUser(
+    connection: Connection,
+    params: { userId?: string; roomId?: string },
+  ) {
     // Set user connection
     let user = params.userId ? this.users.get(params.userId) : undefined;
     if (user) {
-      user.reconnect(ws);
+      user.reconnect(connection);
     } else {
       // New user connection
-      user = new User(ws, this.roomManager);
+      user = new User(connection, this.roomManager);
       this.users.set(user.id, user);
     }
     return user;

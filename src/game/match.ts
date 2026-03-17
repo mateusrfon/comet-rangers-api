@@ -1,9 +1,6 @@
-import { WebSocket } from "ws";
 import { GameEngine } from "./engine";
-import { PlayerConnection } from "./types";
 import { User } from "../domain/user";
 import { ClientState, State } from "./state";
-import { Player } from "./entities/player";
 
 export class Match {
   private engine: GameEngine;
@@ -16,7 +13,7 @@ export class Match {
 
   start() {
     for (const user of this.users) {
-      user.connection.send({
+      user.getConnection().send({
         type: "game_started",
         worldHeight: this.world_height,
         worldWidth: this.world_width,
@@ -27,7 +24,7 @@ export class Match {
 
   broadcast(data: { type: "broadcast"; state: ClientState }) {
     for (const user of this.users) {
-      user.connection.send(data);
+      user.getConnection().send(data);
     }
   }
 }

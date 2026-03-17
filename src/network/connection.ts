@@ -9,13 +9,10 @@ import {
 export class Connection {
   constructor(
     private socket: WebSocket,
-    private handleMessage: (msg: ClientMessage) => void,
-  ) {
-    socket.on("message", (data) => {
-      const msg = decodeMessage(data.toString());
-      this.handleMessage(msg);
-    });
-  }
+    readonly params: {
+      [key: string]: string;
+    },
+  ) {}
 
   send(data: ServerMessage) {
     this.socket.send(encodeMessage(data));
@@ -23,6 +20,13 @@ export class Connection {
 
   onClose(cb: () => void) {
     this.socket.on("close", cb);
+  }
+
+  onMessage(cb: (msg: ClientMessage | null) => void) {
+    this.socket.on("message", (data) => {
+      const msg = decodeMessage(data.toString());
+      cb(msg);
+    });
   }
 
   close() {

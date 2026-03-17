@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 import { Connection } from "../network/connection";
-import WebSocket = require("ws");
 import { Room } from "./room";
 import { ClientMessage, ServerMessage } from "../network/protocol";
 import { RoomManager } from "./roomManager";
@@ -11,35 +10,43 @@ export class User {
   public room?: Room | undefined;
   public player?: Player | undefined;
   public roomManager: RoomManager;
-  public connection: Connection;
   public ready = false;
 
-  constructor(ws: WebSocket, roomManager: RoomManager) {
+  constructor(
+    private _connection: Connection,
+    roomManager: RoomManager,
+  ) {
+    this._connection.onMessage(this.handleMessage);
     this.roomManager = roomManager;
-    this.connection = new Connection(ws, this.handleMessage);
 
-    this.connection.onClose(() => {
+    this._connection.onClose(() => {
       console.log(`Client disconnected: ${this.id}`);
     });
 
-    this.connection.send({
+    this._connection.send({
       type: "user_connected",
       userId: this.id,
     });
   }
 
-  reconnect(ws: WebSocket) {
-    this.connection.close();
-    this.connection = new Connection(ws, this.handleMessage);
+  getConnection(): Connection {
+    return this._connection;
+  }
+
+  reconnect(connection: Connection) {
+    this._connection.close();
+    this._connection = connection;
+    this._connection.onMessage(this.handleMessage);
     console.log(`Client reconnected: ${this.id}`);
   }
 
   send(data: ServerMessage) {
-    this.connection.send(data);
+    this._connection.send(data);
   }
 
   // Handle incoming messages from the client
-  private handleMessage = (msg: ClientMessage) => {
+  private handleMessage = (msg: ClientMessage | null) => {
+    if (msg === null) return;
     switch (msg.type) {
       case "create_room": {
         const roomId = this.roomManager.createRoom(this);

@@ -1,4 +1,4 @@
-import { ClientState, State } from "../game/state";
+import { ClientState } from "../game/state";
 
 export type ClientMessage =
   | { type: "create_room" }
@@ -23,7 +23,7 @@ export type ServerMessage =
   | { type: "game_started"; worldWidth: number; worldHeight: number }
   | { type: "broadcast"; state: ClientState };
 
-export function decodeMessage(data: string): any {
+export function decodeMessage(data: string): ClientMessage | null {
   try {
     return JSON.parse(data);
   } catch (error) {
