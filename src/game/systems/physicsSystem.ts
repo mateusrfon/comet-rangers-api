@@ -1,6 +1,8 @@
 import { Entity } from "../entities/entity";
 import { State } from "../state";
 
+const INPUT_DELAY = 2;
+
 export class PhysicsSystem {
   private dt = 1 / 60;
 
@@ -20,28 +22,32 @@ export class PhysicsSystem {
     for (const player of this.state.players.values()) {
       // Check and apply inputs
       player.lastInput =
-        player.inputQueue.get(this.state.tick) ?? player.lastInput;
+        player.inputQueue.get(this.state.tick - INPUT_DELAY) ??
+        player.lastInput;
 
-      if (player.lastInput.left) player.angle -= player.rotationSpeed * this.dt;
+      if (player.lastInput.left)
+        player.angle -= player.rotationSpeed * 60 * this.dt;
       if (player.lastInput.right)
-        player.angle += player.rotationSpeed * this.dt;
+        player.angle += player.rotationSpeed * 60 * this.dt;
 
       if (player.lastInput.up) {
-        player.vx += Math.cos(player.angle) * player.acceleration * this.dt;
-        player.vy += Math.sin(player.angle) * player.acceleration * this.dt;
+        player.vx +=
+          Math.cos(player.angle) * player.acceleration * 60 * this.dt;
+        player.vy +=
+          Math.sin(player.angle) * player.acceleration * 60 * this.dt;
       }
 
       // Apply friction
-      player.vx *= player.friction * this.dt;
-      player.vy *= player.friction * this.dt;
+      player.vx *= player.friction;
+      player.vy *= player.friction;
 
       // Update position based on velocity
-      player.x += player.vx * this.dt;
-      player.y += player.vy * this.dt;
+      player.x += player.vx * 60 * this.dt;
+      player.y += player.vy * 60 * this.dt;
 
       // Update angle based on angular velocity
-      player.angle += player.angularVelocity * this.dt;
-      player.angularVelocity *= 0.98 * this.dt;
+      player.angle += player.angularVelocity * 60 * this.dt;
+      player.angularVelocity *= player.friction; // 0.98 previously;
 
       this.handleBoundaries(player);
     }

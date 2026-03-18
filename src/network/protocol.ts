@@ -1,4 +1,4 @@
-import { ClientState } from "../game/state";
+import { GameState } from "../game/state";
 
 export type ClientMessage =
   | { type: "create_room" }
@@ -7,7 +7,7 @@ export type ClientMessage =
   | { type: "start_game" }
   | {
       type: "input";
-      tick: number;
+      tick: number; // only useful when clientPrediction
       up: boolean;
       down: boolean;
       left: boolean;
@@ -21,7 +21,7 @@ export type ServerMessage =
   | { type: "room_joined"; roomId: string }
   | { type: "room_not_found" }
   | { type: "game_started"; worldWidth: number; worldHeight: number }
-  | { type: "broadcast"; state: ClientState };
+  | { type: "game_state"; state: GameState };
 
 export function decodeMessage(data: string): ClientMessage | null {
   try {

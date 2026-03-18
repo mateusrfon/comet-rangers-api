@@ -2,7 +2,7 @@ import type { Asteroid } from "./entities/asteroid";
 import type { Bullet } from "./entities/bullet";
 import type { Player } from "./entities/player";
 
-export type ClientState = {
+export type GameState = {
   tick: number;
   players: Player[];
   bullets: Bullet[];

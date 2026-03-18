@@ -4,6 +4,7 @@ import { LevelDefinition, LEVELS } from "./levels";
 import { Match } from "./match";
 import { State } from "./state";
 import { PhysicsSystem } from "./systems/physicsSystem";
+import { ShootingSystem } from "./systems/shootingSystem";
 
 export class GameEngine {
   private state = new State();
@@ -15,6 +16,7 @@ export class GameEngine {
   private tick_rate = 60;
   private tick_interval = 1000 / this.tick_rate; // ms interval of 60hz
   private physicsSystem: PhysicsSystem;
+  private shootingSystem = new ShootingSystem(this.state);
 
   constructor(
     private match: Match,
@@ -93,12 +95,13 @@ export class GameEngine {
   private update() {
     // 1. Update physics (with inputs from player as well)
     this.physicsSystem.updatePositions();
+    this.shootingSystem.shootBullets();
     // 2. Detect collisions
     // 3. Cleanup entities
     // 4. Build snapshot
     // 5. Broadcast
     this.match.broadcast({
-      type: "broadcast",
+      type: "game_state",
       state: { ...this.state, players: [...this.state.players.values()] },
     });
   }
