@@ -13,7 +13,7 @@ type PlayerConfig = {
 
 export class Player extends Entity {
   id: string;
-  public inputQueue: InputState = new Map();
+  public inputQueue: InputState = [];
   public lastInput: Input = {
     up: false,
     down: false,

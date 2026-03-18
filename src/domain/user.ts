@@ -77,8 +77,7 @@ export class User {
       }
 
       case "input": {
-        const { tick, ...rest } = msg;
-        this.player?.inputQueue.set(tick, rest);
+        this.player?.inputQueue.push(msg);
         break;
       }
 

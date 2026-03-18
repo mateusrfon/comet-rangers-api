@@ -7,7 +7,6 @@ export type ClientMessage =
   | { type: "start_game" }
   | {
       type: "input";
-      tick: number; // only useful when clientPrediction
       up: boolean;
       down: boolean;
       left: boolean;

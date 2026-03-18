@@ -1,8 +1,6 @@
 import { Entity } from "../entities/entity";
 import { State } from "../state";
 
-const INPUT_DELAY = 2;
-
 export class PhysicsSystem {
   private dt = 1 / 60;
 
@@ -21,9 +19,11 @@ export class PhysicsSystem {
   private updatePlayerPosition() {
     for (const player of this.state.players.values()) {
       // Check and apply inputs
-      player.lastInput =
-        player.inputQueue.get(this.state.tick - INPUT_DELAY) ??
-        player.lastInput;
+      const input = player.inputQueue.shift();
+
+      if (input) {
+        player.lastInput = input;
+      }
 
       if (player.lastInput.left)
         player.angle -= player.rotationSpeed * 60 * this.dt;

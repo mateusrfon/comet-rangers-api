@@ -6,7 +6,7 @@ export type Input = {
   shoot: boolean;
 };
 
-export type InputState = Map<number, Input>;
+export type InputState = Input[];
 
 export interface PlayerConnection {
   id: string;
