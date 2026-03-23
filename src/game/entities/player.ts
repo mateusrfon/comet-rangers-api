@@ -67,12 +67,13 @@ export class Player extends Entity {
     this.spawn = { x, y, angle };
   }
 
-  canShoot(tick: number): boolean {
+  public canShoot(tick: number): boolean {
+    if (!this.getIsAlive()) return false;
     const timeSinceLastShot = tick - this.lastShot;
     return timeSinceLastShot >= this.shootCooldown;
   }
 
-  getWorldVertices(): { x: number; y: number }[] {
+  public getWorldVertices(): { x: number; y: number }[] {
     const cos = Math.cos(this.angle);
     const sin = Math.sin(this.angle);
     return this.localVertices.map((v) => ({
@@ -81,18 +82,12 @@ export class Player extends Entity {
     }));
   }
 
-  // go to collisionSystem
-  public applyImpulse(ix: number, iy: number, hitX: number, hitY: number) {
-    // impulso linear
-    this.vx += ix; // Should divide by mass if we had it, but we'll assume mass = 1 for simplicity
-    this.vy += iy;
-
-    // torque simplificado
-    const rx = hitX - this.x;
-    const ry = hitY - this.y;
-
-    const torque = rx * iy - ry * ix;
-    this.angularVelocity += torque * 0.001; // Fine adjustment factor for feel
+  public takeDamage() {
+    if (this.life === 0) {
+      super.setIsAlive(false);
+    } else {
+      this.life--;
+    }
   }
 
   // go to respawnSystem
@@ -103,7 +98,7 @@ export class Player extends Entity {
     this.vx = 0;
     this.vy = 0;
     this.angularVelocity = 0;
-    this.isAlive = true;
     this.life -= 1;
+    super.setIsAlive(true);
   }
 }

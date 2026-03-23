@@ -2,19 +2,32 @@ import { Entity } from "./entity";
 
 export class Asteroid extends Entity {
   speed: number;
+  readonly angle: number;
 
-  constructor(x: number, y: number, size: number, speed: number) {
+  constructor(
+    x: number,
+    y: number,
+    size: number,
+    speed: number,
+    spawnAngle?: number | undefined,
+  ) {
     super("asteroid", x, y, size);
 
-    const angle = Math.random() * Math.PI * 2;
+    this.angle = spawnAngle || Math.random() * Math.PI * 2;
 
     this.speed = speed;
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed;
+    this.vx = Math.cos(this.angle) * speed;
+    this.vy = Math.sin(this.angle) * speed;
   }
 
-  update({ delta }: { delta: number }): void {
-    this.x += this.vx * delta;
-    this.y += this.vy * delta;
+  takeDamage(): void {
+    super.setIsAlive(false);
+  }
+
+  shouldSplit(): boolean {
+    if (!this.getIsAlive() && this.size > 10) {
+      return true;
+    }
+    return false;
   }
 }

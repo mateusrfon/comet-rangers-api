@@ -27,12 +27,4 @@ export class Bullet extends Entity {
     this.vx = vx * 0.5 + Math.cos(angle) * speed;
     this.vy = vy * 0.5 + Math.sin(angle) * speed;
   }
-
-  update({ delta }: { delta: number }) {
-    this.lifetime -= delta;
-    if (this.lifetime <= 0) {
-      this.isAlive = false;
-      return;
-    }
-  }
 }

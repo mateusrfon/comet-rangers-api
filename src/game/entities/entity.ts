@@ -7,12 +7,20 @@ export abstract class Entity {
   vx = 0;
   vy = 0;
   size: number;
-  isAlive = true;
+  private isAlive = true;
 
   constructor(type: EntityType, x: number, y: number, size: number) {
     this.type = type;
     this.x = x;
     this.y = y;
     this.size = size;
+  }
+
+  setIsAlive(isAlive: boolean) {
+    this.isAlive = isAlive;
+  }
+
+  getIsAlive() {
+    return this.isAlive;
   }
 }

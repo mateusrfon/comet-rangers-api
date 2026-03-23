@@ -18,6 +18,7 @@ export class ShootingSystem {
           10,
         );
         this.state.bullets.push(bullet);
+        player.lastShot = this.state.tick;
       }
     }
   }

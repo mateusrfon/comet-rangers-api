@@ -3,8 +3,11 @@ import { Player } from "./entities/player";
 import { LevelDefinition, LEVELS } from "./levels";
 import { Match } from "./match";
 import { State } from "./state";
+import { CleanupSystem } from "./systems/cleanupSystem";
+import { CollisionSystem } from "./systems/collisionSystem";
 import { PhysicsSystem } from "./systems/physicsSystem";
 import { ShootingSystem } from "./systems/shootingSystem";
+import { SpawnSystem } from "./systems/spawnSystem";
 
 export class GameEngine {
   private state = new State();
@@ -16,18 +19,24 @@ export class GameEngine {
   private tick_rate = 60;
   private tick_interval = 1000 / this.tick_rate; // ms interval of 60hz
   private physicsSystem: PhysicsSystem;
+  private collisionSystem: CollisionSystem;
+  private cleanupSystem: CleanupSystem;
+  private spawnSystem: SpawnSystem;
   private shootingSystem = new ShootingSystem(this.state);
 
   constructor(
     private match: Match,
-    private world_width: number,
-    private world_height: number,
+    private worldWidth: number,
+    private worldHeight: number,
   ) {
-    this.physicsSystem = new PhysicsSystem(
+    this.physicsSystem = new PhysicsSystem(this.state, worldWidth, worldHeight);
+    this.collisionSystem = new CollisionSystem(
       this.state,
-      world_width,
-      world_height,
+      this.worldWidth,
+      this.worldHeight,
     );
+    this.cleanupSystem = new CleanupSystem(this.state);
+    this.spawnSystem = new SpawnSystem(this.state);
   }
 
   start() {
@@ -60,9 +69,9 @@ export class GameEngine {
 
     const positions = [
       { x: offset, y: offset },
-      { x: this.world_width - offset, y: offset },
-      { x: offset, y: this.world_height - offset },
-      { x: this.world_width - offset, y: this.world_height - offset },
+      { x: this.worldWidth - offset, y: offset },
+      { x: offset, y: this.worldHeight - offset },
+      { x: this.worldWidth - offset, y: this.worldHeight - offset },
     ];
 
     let i = 0;
@@ -93,12 +102,18 @@ export class GameEngine {
   }
 
   private update() {
-    // 1. Update physics (with inputs from player as well)
+    // 1. Update physics
     this.physicsSystem.updatePositions();
     this.shootingSystem.shootBullets();
-    // 2. Detect collisions
-    // 3. Cleanup entities
-    // 4. Build snapshot
+    // 2. Detect and resolve collisions
+    const collisions = this.collisionSystem.getCollisions();
+    this.collisionSystem.resolveCollisions(collisions);
+    // 3. Spawn entities
+    this.spawnSystem.splitAsteroid();
+    this.spawnSystem.respawnPlayers(); // todo
+    // 4. Cleanup entities
+    this.cleanupSystem.checkLifetime(); // todo
+    this.cleanupSystem.cleanupEntities();
     // 5. Broadcast
     this.match.broadcast({
       type: "game_state",
