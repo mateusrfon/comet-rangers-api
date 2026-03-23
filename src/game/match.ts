@@ -1,6 +1,6 @@
 import { GameEngine } from "./engine";
 import { User } from "../domain/user";
-import { GameState, State } from "./state";
+import { GameStateDTO } from "../network/protocol";
 
 export class Match {
   private engine: GameEngine;
@@ -22,7 +22,7 @@ export class Match {
     this.engine.start();
   }
 
-  broadcast(data: { type: "game_state"; state: GameState }) {
+  broadcast(data: { type: "game_state"; state: GameStateDTO }) {
     for (const user of this.users) {
       user.getConnection().send(data);
     }

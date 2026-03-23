@@ -1,4 +1,4 @@
-type EntityType = "player" | "bullet" | "asteroid";
+export type EntityType = "player" | "bullet" | "asteroid";
 
 export abstract class Entity {
   readonly type: EntityType;

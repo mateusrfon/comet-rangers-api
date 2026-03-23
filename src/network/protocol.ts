@@ -1,4 +1,31 @@
-import { GameState } from "../game/state";
+import { EntityType } from "../game/entities/entity";
+
+export type EntityDTO = {
+  type: EntityType;
+  x: number;
+  y: number;
+  size: number;
+  isAlive: boolean;
+};
+
+export type PlayerDTO = EntityDTO & {
+  id: string;
+  angle: number;
+  life: number;
+  score: number;
+};
+
+export type BulletDTO = EntityDTO;
+
+export type AsteroidDTO = EntityDTO;
+
+export type GameStateDTO = {
+  tick: number;
+  players: PlayerDTO[];
+  bullets: BulletDTO[];
+  asteroids: AsteroidDTO[];
+  level: number;
+};
 
 export type ClientMessage =
   | { type: "create_room" }
@@ -20,7 +47,7 @@ export type ServerMessage =
   | { type: "room_joined"; roomId: string }
   | { type: "room_not_found" }
   | { type: "game_started"; worldWidth: number; worldHeight: number }
-  | { type: "game_state"; state: GameState };
+  | { type: "game_state"; state: GameStateDTO };
 
 export function decodeMessage(data: string): ClientMessage | null {
   try {

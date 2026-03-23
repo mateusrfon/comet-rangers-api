@@ -40,6 +40,7 @@ export class GameEngine {
   }
 
   start() {
+    if (this.running === true) return;
     this.spawnPlayers();
     this.spawnLevel(LEVELS[this.state.level]!);
     this.running = true;
@@ -117,7 +118,7 @@ export class GameEngine {
     // 5. Broadcast
     this.match.broadcast({
       type: "game_state",
-      state: { ...this.state, players: [...this.state.players.values()] },
+      state: this.state.getStateDTO(),
     });
   }
 
