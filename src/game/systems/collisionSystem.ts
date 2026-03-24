@@ -34,17 +34,17 @@ export class CollisionSystem {
     for (const collision of collisions) {
       switch (collision.type) {
         case "bullet-asteroid": {
-          collision.bullet.setIsAlive(false);
-          collision.asteroid.setIsAlive(false);
+          collision.bullet.takeDamage();
+          collision.asteroid.takeDamage();
           break;
         }
         case "player-asteroid": {
-          collision.player.takeDamage();
+          collision.player.takeDamage(this.state.tick);
           collision.asteroid.takeDamage();
           break;
         }
         case "player-bullet": {
-          collision.player.takeDamage();
+          collision.bullet.takeDamage();
           this.applyPlayerImpulse(
             collision.player,
             collision.bullet,

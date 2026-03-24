@@ -27,4 +27,8 @@ export class Bullet extends Entity {
     this.vx = vx * 0.5 + Math.cos(angle) * speed;
     this.vy = vy * 0.5 + Math.sin(angle) * speed;
   }
+
+  takeDamage(): void {
+    super.setIsAlive(false);
+  }
 }

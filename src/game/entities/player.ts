@@ -35,8 +35,8 @@ export class Player extends Entity {
   shootCooldown = 6; // 0.1s * tick_rate
   lastShot = this.shootCooldown * -1;
 
-  respawnCooldown = 3;
-  currentRespawnCooldown = this.respawnCooldown;
+  respawnCooldown = 180; // 3s * tick_rate
+  deathTick = 0;
 
   public angularVelocity = 0;
 
@@ -73,6 +73,12 @@ export class Player extends Entity {
     return timeSinceLastShot >= this.shootCooldown;
   }
 
+  public canRespawn(tick: number): boolean {
+    if (this.getIsAlive()) return false;
+    const dt = tick - this.deathTick;
+    return dt >= this.respawnCooldown;
+  }
+
   public getWorldVertices(): { x: number; y: number }[] {
     const cos = Math.cos(this.angle);
     const sin = Math.sin(this.angle);
@@ -82,23 +88,25 @@ export class Player extends Entity {
     }));
   }
 
-  public takeDamage() {
-    if (this.life === 0) {
-      super.setIsAlive(false);
-    } else {
-      this.life--;
-    }
+  public takeDamage(tick: number) {
+    this.deathTick = tick;
+    super.setIsAlive(false);
   }
 
-  // go to respawnSystem
-  respawn() {
+  public removeLife() {
+    this.life--;
+  }
+
+  public respawn() {
+    super.setIsAlive(true);
+  }
+
+  public resetToSpawn() {
     this.x = this.spawn.x;
     this.y = this.spawn.y;
     this.angle = this.spawn.angle;
     this.vx = 0;
     this.vy = 0;
     this.angularVelocity = 0;
-    this.life -= 1;
-    super.setIsAlive(true);
   }
 }

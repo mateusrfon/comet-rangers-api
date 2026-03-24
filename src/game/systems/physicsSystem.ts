@@ -18,9 +18,9 @@ export class PhysicsSystem {
 
   private updatePlayerPosition() {
     for (const player of this.state.players.values()) {
-      if (!player.getIsAlive()) continue;
       // Check and apply inputs
       const input = player.inputQueue.shift();
+      if (!player.getIsAlive()) continue;
 
       if (input) {
         player.lastInput = input;
