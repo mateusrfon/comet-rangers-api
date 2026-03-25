@@ -16,9 +16,10 @@ export class ShootingSystem {
           player.vy,
           player.angle,
           10,
+          this.state.tick,
         );
         this.state.bullets.push(bullet);
-        player.lastShot = this.state.tick;
+        player.registerLastShot(this.state.tick);
       }
     }
   }

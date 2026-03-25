@@ -111,9 +111,9 @@ export class GameEngine {
     this.collisionSystem.resolveCollisions(collisions);
     // 3. Spawn entities
     this.spawnSystem.splitAsteroid();
-    this.spawnSystem.respawnPlayers(); // todo
+    this.spawnSystem.respawnPlayers();
     // 4. Cleanup entities
-    this.cleanupSystem.checkLifetime(); // todo
+    this.cleanupSystem.checkBulletLifetime();
     this.cleanupSystem.cleanupEntities();
     // 5. Broadcast
     this.match.broadcast({

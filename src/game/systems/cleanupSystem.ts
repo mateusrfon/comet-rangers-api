@@ -2,7 +2,13 @@ import { State } from "../state";
 
 export class CleanupSystem {
   constructor(private state: State) {}
-  checkLifetime() {}
+  checkBulletLifetime() {
+    this.state.bullets.forEach((b) => {
+      if (b.isExpired(this.state.tick)) {
+        b.setIsAlive(false);
+      }
+    });
+  }
 
   cleanupEntities() {
     this.state.bullets.forEach((b) => {

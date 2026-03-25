@@ -1,7 +1,8 @@
 import { Entity } from "./entity";
 
 export class Bullet extends Entity {
-  lifetime = 1;
+  lifetime = 60; // 1s * 60 (tick_rate)
+  private bornAt;
   prevX: number;
   prevY: number;
   ownerId: string;
@@ -16,6 +17,7 @@ export class Bullet extends Entity {
     vy: number,
     angle: number,
     speed: number,
+    bornAt: number,
   ) {
     super("bullet", x, y, 2);
 
@@ -26,6 +28,13 @@ export class Bullet extends Entity {
 
     this.vx = vx * 0.5 + Math.cos(angle) * speed;
     this.vy = vy * 0.5 + Math.sin(angle) * speed;
+
+    this.bornAt = bornAt;
+  }
+
+  isExpired(tick: number) {
+    const timeSinceBorn = tick - this.bornAt;
+    return timeSinceBorn >= this.lifetime;
   }
 
   takeDamage(): void {

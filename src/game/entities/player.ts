@@ -32,8 +32,8 @@ export class Player extends Entity {
 
   friction = 0.99;
 
-  shootCooldown = 6; // 0.1s * tick_rate
-  lastShot = this.shootCooldown * -1;
+  private shootCooldown = 6; // 0.1s * 60 (tick_rate)
+  private lastShot = this.shootCooldown * -1;
 
   respawnCooldown = 180; // 3s * tick_rate
   deathTick = 0;
@@ -65,6 +65,10 @@ export class Player extends Entity {
       { x: -this.size, y: -this.size / 1.5 }, // right
     ];
     this.spawn = { x, y, angle };
+  }
+
+  public registerLastShot(tick: number) {
+    this.lastShot = tick;
   }
 
   public canShoot(tick: number): boolean {
