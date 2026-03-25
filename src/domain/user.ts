@@ -4,6 +4,7 @@ import { Room } from "./room";
 import { ClientMessage, ServerMessage } from "../network/protocol";
 import { RoomManager } from "./roomManager";
 import { Player } from "../game/entities/player";
+import { Input } from "../game/types";
 
 export class User {
   public readonly id = randomUUID();
@@ -44,6 +45,16 @@ export class User {
     this._connection.send(data);
   }
 
+  private isSameInput(a: Input, b: Input): boolean {
+    return (
+      a.up === b.up &&
+      a.down === b.down &&
+      a.left === b.left &&
+      a.right === b.right &&
+      a.shoot === b.shoot
+    );
+  }
+
   // Handle incoming messages from the client
   private handleMessage = (msg: ClientMessage | null) => {
     if (msg === null) return;
@@ -77,7 +88,18 @@ export class User {
       }
 
       case "input": {
-        this.player?.inputQueue.push(msg);
+        if (!this.player) break;
+        const lastInput = this.player.lastInput;
+        if (!this.isSameInput(lastInput, msg)) {
+          this.player.inputQueue.push({
+            up: msg.up,
+            down: msg.down,
+            right: msg.right,
+            left: msg.left,
+            shoot: msg.shoot,
+          });
+          console.log("new input: ", msg);
+        }
         break;
       }
 
