@@ -13,7 +13,7 @@ export class Match {
 
   start() {
     for (const user of this.users) {
-      user.getConnection().send({
+      user.send({
         type: "game_started",
         worldHeight: this.worldHeight,
         worldWidth: this.worldWidth,
@@ -24,7 +24,7 @@ export class Match {
 
   broadcast(data: { type: "game_state"; state: GameStateDTO }) {
     for (const user of this.users) {
-      user.getConnection().send(data);
+      user.send(data);
     }
   }
 }

@@ -21,11 +21,19 @@ export class RoomManager {
     const room = user.room;
     if (!room) return;
 
-    room.removeUser(user.id);
+    const leftUser = room.removeUser(user.id);
+    leftUser?.send({ type: "room_left", roomId: room.id });
 
     if (room.users.length === 0) {
       this.rooms.delete(room.id); // delete room if no players left
       return;
+    }
+
+    for (const user of room.users) {
+      user.send({
+        type: "player_left",
+        playerId: user.id,
+      });
     }
 
     if (room.host.id === user.id) {

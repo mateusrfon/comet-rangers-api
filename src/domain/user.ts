@@ -30,10 +30,6 @@ export class User {
     });
   }
 
-  getConnection(): Connection {
-    return this._connection;
-  }
-
   reconnect(connection: Connection) {
     this._connection.close();
     this._connection = connection;
@@ -98,7 +94,6 @@ export class User {
             left: msg.left,
             shoot: msg.shoot,
           });
-          console.log("new input: ", msg);
         }
         break;
       }

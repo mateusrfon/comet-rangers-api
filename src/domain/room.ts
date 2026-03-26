@@ -25,6 +25,8 @@ export class Room {
 
     const [player] = this.users.splice(index, 1);
     player!.room = undefined;
+
+    return player;
   }
 
   start() {

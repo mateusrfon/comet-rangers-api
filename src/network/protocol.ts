@@ -45,6 +45,10 @@ export type ServerMessage =
   | { type: "user_connected"; userId: string }
   | { type: "room_created"; roomId: string }
   | { type: "room_joined"; roomId: string }
+  | { type: "room_left"; roomId: string }
+  | { type: "room_not_found"; roomId: string }
+  | { type: "player_joined"; playerId: string }
+  | { type: "player_left"; playerId: string }
   | { type: "room_not_found" }
   | { type: "game_started"; worldWidth: number; worldHeight: number }
   | { type: "game_state"; state: GameStateDTO };
