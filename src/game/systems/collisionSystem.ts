@@ -75,8 +75,13 @@ export class CollisionSystem {
     const rx = hitX - player.x;
     const ry = hitY - player.y;
 
-    const torque = rx * impulseY - ry * impulseX;
-    player.angularVelocity += torque * 0.001; // Fine adjustment factor for feel
+    const torque = (rx * impulseY - ry * impulseX) * 0.001; // Fine adjustment factor for feel
+    player.angularVelocity += torque;
+    // Angular velocity limit to prevent rapid rotation
+    player.angularVelocity = Math.max(
+      -0.5,
+      Math.min(0.5, player.angularVelocity),
+    );
   }
 
   public getCollisions(): CollisionEvent[] {

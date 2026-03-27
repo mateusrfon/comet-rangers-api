@@ -48,7 +48,7 @@ export class Player extends Entity {
     y,
     angle = 0,
     accel = 0.1,
-    rot = 0.05,
+    rot = Math.PI / 60,
     life = 5,
   }: PlayerConfig) {
     super("player", x, y, 20);
