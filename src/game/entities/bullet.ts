@@ -13,8 +13,8 @@ export class Bullet extends Entity {
     ownerId: string,
     x: number,
     y: number,
-    vx: number,
-    vy: number,
+    playerVX: number,
+    playerVY: number,
     angle: number,
     speed: number,
     bornAt: number,
@@ -26,8 +26,8 @@ export class Bullet extends Entity {
     this.prevX = x;
     this.prevY = y;
 
-    this.vx = vx * 0.5 + Math.cos(angle) * speed;
-    this.vy = vy * 0.5 + Math.sin(angle) * speed;
+    this.vx = playerVX * 0.5 + Math.cos(angle) * speed;
+    this.vy = playerVY * 0.5 + Math.sin(angle) * speed;
 
     this.bornAt = bornAt;
   }

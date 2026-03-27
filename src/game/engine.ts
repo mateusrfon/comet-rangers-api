@@ -41,8 +41,12 @@ export class GameEngine {
 
   start() {
     if (this.running === true) return;
-    this.spawnPlayers();
-    this.spawnLevel(LEVELS[this.state.level]!);
+    this.spawnSystem.spawnPlayers(
+      this.match.users,
+      this.worldWidth,
+      this.worldHeight,
+    );
+    this.spawnSystem.spawnLevel(LEVELS[this.state.level]!);
     this.running = true;
     this.lastTime = Date.now();
     this.loop();
@@ -63,43 +67,6 @@ export class GameEngine {
     }
 
     setImmediate(() => this.loop());
-  }
-
-  private spawnPlayers() {
-    const offset = 80;
-
-    const positions = [
-      { x: offset, y: offset },
-      { x: this.worldWidth - offset, y: offset },
-      { x: offset, y: this.worldHeight - offset },
-      { x: this.worldWidth - offset, y: this.worldHeight - offset },
-    ];
-
-    let i = 0;
-
-    this.match.users.forEach((user) => {
-      if (i >= 4) return;
-
-      const pos = positions[i];
-
-      const player = new Player({
-        id: user.id,
-        x: pos!.x,
-        y: pos!.y,
-      });
-
-      user.player = player;
-      this.state.players.set(player.id, player);
-
-      i++;
-    });
-  }
-
-  private spawnLevel(level: LevelDefinition) {
-    for (const spawn of level.asteroidSpawns) {
-      const asteroid = new Asteroid(spawn.x, spawn.y, spawn.size, spawn.speed);
-      this.state.asteroids.push(asteroid);
-    }
   }
 
   private update() {
