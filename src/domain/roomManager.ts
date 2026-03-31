@@ -22,7 +22,7 @@ export class RoomManager {
     if (!room) return;
 
     const leftUser = room.removeUser(user.id);
-    leftUser?.send({ type: "room_left", roomId: room.id });
+    leftUser?.send({ type: "room_left", data: { roomId: room.id } });
 
     if (room.users.length === 0) {
       this.rooms.delete(room.id); // delete room if no players left
@@ -32,7 +32,7 @@ export class RoomManager {
     for (const user of room.users) {
       user.send({
         type: "player_left",
-        playerId: user.id,
+        data: { playerId: user.id },
       });
     }
 

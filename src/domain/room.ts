@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { Match } from "../game/match";
 import { User } from "./user";
+import { ServerMessage } from "../network/protocol";
 
 export class Room {
   id: string;
@@ -16,6 +17,13 @@ export class Room {
   addPlayer(player: User) {
     if (this.users.length >= 4) return false;
     this.users.push(player);
+    this.broadcast({
+      type: "player_joined",
+      data: {
+        playerId: player.id,
+        players: this.users.map((u, i) => ({ id: u.id, name: `Player ${i}` })),
+      },
+    });
     return true;
   }
 
@@ -29,9 +37,15 @@ export class Room {
     return player;
   }
 
+  public broadcast(data: ServerMessage) {
+    for (const user of this.users) {
+      user.send(data);
+    }
+  }
+
   start() {
     if (this.users.length === 0) return;
-    const match = new Match(this.users);
+    const match = new Match(this, this.users);
     match.start();
   }
 }

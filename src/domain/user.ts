@@ -26,7 +26,7 @@ export class User {
 
     this._connection.send({
       type: "user_connected",
-      userId: this.id,
+      data: { userId: this.id },
     });
   }
 
@@ -57,15 +57,15 @@ export class User {
     switch (msg.type) {
       case "create_room": {
         const roomId = this.roomManager.createRoom(this);
-        this.send({ type: "room_created", roomId });
+        this.send({ type: "room_created", data: { roomId } });
         break;
       }
 
       case "join_room": {
-        const joined = this.roomManager.joinRoom(msg.roomId, this);
+        const joined = this.roomManager.joinRoom(msg.data.roomId, this);
         this.send(
           joined
-            ? { type: "room_joined", roomId: msg.roomId }
+            ? { type: "room_joined", data: { roomId: msg.data.roomId } }
             : { type: "room_not_found" },
         );
         break;

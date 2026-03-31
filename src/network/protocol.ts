@@ -29,7 +29,7 @@ export type GameStateDTO = {
 
 export type ClientMessage =
   | { type: "create_room" }
-  | { type: "join_room"; roomId: string }
+  | { type: "join_room"; data: { roomId: string } }
   | { type: "leave_room" }
   | { type: "start_game" }
   | {
@@ -42,16 +42,19 @@ export type ClientMessage =
     };
 
 export type ServerMessage =
-  | { type: "user_connected"; userId: string }
-  | { type: "room_created"; roomId: string }
-  | { type: "room_joined"; roomId: string }
-  | { type: "room_left"; roomId: string }
-  | { type: "room_not_found"; roomId: string }
-  | { type: "player_joined"; playerId: string }
-  | { type: "player_left"; playerId: string }
+  | { type: "user_connected"; data: { userId: string } }
+  | { type: "room_created"; data: { roomId: string } }
+  | { type: "room_joined"; data: { roomId: string } }
+  | { type: "room_left"; data: { roomId: string } }
+  | { type: "room_not_found"; data: { roomId: string } }
+  | {
+      type: "player_joined";
+      data: { playerId: string; players: { id: string; name: string }[] };
+    }
+  | { type: "player_left"; data: { playerId: string } }
   | { type: "room_not_found" }
-  | { type: "game_started"; worldWidth: number; worldHeight: number }
-  | { type: "game_state"; state: GameStateDTO };
+  | { type: "game_started"; data: { worldWidth: number; worldHeight: number } }
+  | { type: "game_state"; data: { state: GameStateDTO } };
 
 export function decodeMessage(data: string): ClientMessage | null {
   try {

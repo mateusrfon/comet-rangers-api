@@ -1,13 +1,17 @@
 import { GameEngine } from "./engine";
 import { User } from "../domain/user";
 import { GameStateDTO } from "../network/protocol";
+import { Room } from "../domain/room";
 
 export class Match {
   private engine: GameEngine;
   private worldWidth = 1920;
   private worldHeight = 1080;
 
-  constructor(readonly users: User[]) {
+  constructor(
+    public room: Room,
+    readonly users: User[],
+  ) {
     this.engine = new GameEngine(this, this.worldWidth, this.worldHeight);
   }
 
@@ -15,16 +19,9 @@ export class Match {
     for (const user of this.users) {
       user.send({
         type: "game_started",
-        worldHeight: this.worldHeight,
-        worldWidth: this.worldWidth,
+        data: { worldHeight: this.worldHeight, worldWidth: this.worldWidth },
       });
     }
     this.engine.start();
-  }
-
-  broadcast(data: { type: "game_state"; state: GameStateDTO }) {
-    for (const user of this.users) {
-      user.send(data);
-    }
   }
 }

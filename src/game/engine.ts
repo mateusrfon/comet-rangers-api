@@ -83,9 +83,9 @@ export class GameEngine {
     this.cleanupSystem.checkBulletLifetime();
     this.cleanupSystem.cleanupEntities();
     // 5. Broadcast
-    this.match.broadcast({
+    this.match.room.broadcast({
       type: "game_state",
-      state: this.state.getStateDTO(),
+      data: { state: this.state.getStateDTO() },
     });
   }
 
