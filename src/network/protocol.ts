@@ -19,6 +19,11 @@ export type BulletDTO = EntityDTO;
 
 export type AsteroidDTO = EntityDTO;
 
+export type RoomInfo = {
+  hostId: string;
+  players: { id: string; name: string }[];
+};
+
 export type GameStateDTO = {
   tick: number;
   players: PlayerDTO[];
@@ -30,8 +35,8 @@ export type GameStateDTO = {
 export type ClientMessage =
   | { type: "create_room" }
   | { type: "join_room"; data: { roomId: string } }
-  | { type: "leave_room" }
-  | { type: "start_game" }
+  | { type: "leave_room"; data: { roomId: string } }
+  | { type: "start_game"; data: { roomId: string } }
   | {
       type: "input";
       up: boolean;
@@ -44,15 +49,11 @@ export type ClientMessage =
 export type ServerMessage =
   | { type: "user_connected"; data: { userId: string } }
   | { type: "room_created"; data: { roomId: string } }
-  | { type: "room_joined"; data: { roomId: string } }
-  | { type: "room_left"; data: { roomId: string } }
-  | { type: "room_not_found"; data: { roomId: string } }
-  | {
-      type: "player_joined";
-      data: { playerId: string; players: { id: string; name: string }[] };
-    }
-  | { type: "player_left"; data: { playerId: string } }
+  | { type: "room_joined" }
   | { type: "room_not_found" }
+  | { type: "room_left"; data: { roomId: string } }
+  | { type: "player_joined"; data: { room: RoomInfo } }
+  | { type: "player_left"; data: { room: RoomInfo } }
   | { type: "game_started"; data: { worldWidth: number; worldHeight: number } }
   | { type: "game_state"; data: { state: GameStateDTO } };
 

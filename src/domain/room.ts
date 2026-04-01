@@ -20,8 +20,13 @@ export class Room {
     this.broadcast({
       type: "player_joined",
       data: {
-        playerId: player.id,
-        players: this.users.map((u, i) => ({ id: u.id, name: `Player ${i}` })),
+        room: {
+          hostId: this.host.id,
+          players: this.users.map((u, i) => ({
+            id: u.id,
+            name: `Player ${i + 1}`,
+          })),
+        },
       },
     });
     return true;
@@ -32,7 +37,27 @@ export class Room {
     if (index === -1) return;
 
     const [player] = this.users.splice(index, 1);
-    player!.room = undefined;
+    player!.roomId = undefined;
+    player!.send({ type: "room_left", data: { roomId: this.id } });
+
+    if (this.users.length === 0) return;
+
+    if (this.host.id === player!.id) {
+      this.host = this.users[0]!; // Assign new host if needed
+    }
+
+    this.broadcast({
+      type: "player_left",
+      data: {
+        room: {
+          hostId: this.host.id,
+          players: this.users.map((u, i) => ({
+            id: u.id,
+            name: `Player ${i}`,
+          })),
+        },
+      },
+    });
 
     return player;
   }

@@ -8,7 +8,7 @@ import { Input } from "../game/types";
 
 export class User {
   public readonly id = randomUUID();
-  public room?: Room | undefined;
+  public roomId?: string | undefined;
   public player?: Player | undefined;
   public roomManager: RoomManager;
   public ready = false;
@@ -64,22 +64,18 @@ export class User {
       case "join_room": {
         const joined = this.roomManager.joinRoom(msg.data.roomId, this);
         this.send(
-          joined
-            ? { type: "room_joined", data: { roomId: msg.data.roomId } }
-            : { type: "room_not_found" },
+          joined ? { type: "room_joined" } : { type: "room_not_found" },
         );
         break;
       }
 
       case "leave_room": {
-        this.roomManager.leaveRoom(this);
+        this.roomManager.leaveRoom(msg.data.roomId, this.id);
         break;
       }
 
       case "start_game": {
-        if (this.room) {
-          this.roomManager.startRoom(this);
-        }
+        this.roomManager.startRoom(msg.data.roomId, this.id);
         break;
       }
 

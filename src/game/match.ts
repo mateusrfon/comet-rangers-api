@@ -16,12 +16,10 @@ export class Match {
   }
 
   start() {
-    for (const user of this.users) {
-      user.send({
-        type: "game_started",
-        data: { worldHeight: this.worldHeight, worldWidth: this.worldWidth },
-      });
-    }
+    this.room.broadcast({
+      type: "game_started",
+      data: { worldHeight: this.worldHeight, worldWidth: this.worldWidth },
+    });
     this.engine.start();
   }
 }
