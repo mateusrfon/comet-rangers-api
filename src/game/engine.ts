@@ -1,6 +1,4 @@
-import { Asteroid } from "./entities/asteroid";
-import { Player } from "./entities/player";
-import { LevelDefinition, LEVELS } from "./levels";
+import { LEVELS } from "./levels";
 import { Match } from "./match";
 import { State } from "./state";
 import { CleanupSystem } from "./systems/cleanupSystem";
@@ -11,6 +9,7 @@ import { SpawnSystem } from "./systems/spawnSystem";
 
 export class GameEngine {
   private state = new State();
+  private immediate?: NodeJS.Immediate | undefined;
 
   private running = false;
   private lastTime = 0;
@@ -37,6 +36,8 @@ export class GameEngine {
     );
     this.cleanupSystem = new CleanupSystem(this.state);
     this.spawnSystem = new SpawnSystem(this.state);
+
+    this.immediate = setImmediate(() => this.loop());
   }
 
   start() {
@@ -65,8 +66,6 @@ export class GameEngine {
       this.update();
       this.accumulator -= this.tick_interval;
     }
-
-    setImmediate(() => this.loop());
   }
 
   private update() {
@@ -82,7 +81,9 @@ export class GameEngine {
     // 4. Cleanup entities
     this.cleanupSystem.checkBulletLifetime();
     this.cleanupSystem.cleanupEntities();
-    // 5. Broadcast
+    // 5. Check game status
+    this.state.checkGameStatus();
+    // 6. Broadcast
     this.match.room.broadcast({
       type: "game_state",
       data: { state: this.state.getStateDTO() },
@@ -91,5 +92,16 @@ export class GameEngine {
 
   stop() {
     this.running = false;
+  }
+
+  destroy() {
+    this.stop();
+
+    if (this.immediate) {
+      clearImmediate(this.immediate);
+      this.immediate = undefined;
+    }
+
+    console.log("Engine destroyed");
   }
 }

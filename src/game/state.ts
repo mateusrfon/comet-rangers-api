@@ -9,6 +9,7 @@ export type GameState = {
   bullets: Bullet[];
   asteroids: Asteroid[];
   level: number;
+  gameOver: boolean;
 };
 
 export class State {
@@ -19,7 +20,19 @@ export class State {
   asteroids: Asteroid[] = [];
 
   level: number = 0;
-  // gameOver = false;
+  gameOver = false;
+
+  checkGameStatus() {
+    const alivePlayers = Array.from(this.players.values()).filter((player) =>
+      player.getIsAlive(),
+    );
+    if (alivePlayers.length === 0) {
+      this.gameOver = true;
+      return false;
+    }
+
+    return true;
+  }
 
   getStateDTO(): GameStateDTO {
     const data: GameStateDTO = {

@@ -35,8 +35,9 @@ export type GameStateDTO = {
 export type ClientMessage =
   | { type: "create_room" }
   | { type: "join_room"; data: { roomId: string } }
-  | { type: "leave_room"; data: { roomId: string } }
-  | { type: "start_game"; data: { roomId: string } }
+  | { type: "leave_room" }
+  | { type: "start_game" }
+  | { type: "end_match" }
   | {
       type: "input";
       up: boolean;

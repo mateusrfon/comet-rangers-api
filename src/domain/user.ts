@@ -70,12 +70,20 @@ export class User {
       }
 
       case "leave_room": {
-        this.roomManager.leaveRoom(msg.data.roomId, this.id);
+        if (!this.roomId) break;
+        this.roomManager.leaveRoom(this.roomId, this.id);
         break;
       }
 
       case "start_game": {
-        this.roomManager.startRoom(msg.data.roomId, this.id);
+        if (!this.roomId) break;
+        this.roomManager.startRoom(this.roomId, this.id);
+        break;
+      }
+
+      case "end_match": {
+        if (!this.roomId) break;
+        this.roomManager.endMatch(this.roomId, this.id);
         break;
       }
 

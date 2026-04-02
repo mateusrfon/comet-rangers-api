@@ -22,4 +22,8 @@ export class Match {
     });
     this.engine.start();
   }
+
+  end() {
+    this.engine.destroy();
+  }
 }

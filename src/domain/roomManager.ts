@@ -35,7 +35,14 @@ export class RoomManager {
 
     if (room.host.id !== userId) return false; // Only host can start
 
-    room.start();
+    room.startMatch();
     return true;
+  }
+
+  endMatch(roomId: string, userId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return false;
+    if (room.host.id !== userId) return false; // Only host can end
+    return room.endMatch();
   }
 }

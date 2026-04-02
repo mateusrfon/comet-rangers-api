@@ -4,14 +4,16 @@ import { User } from "./user";
 import { ServerMessage } from "../network/protocol";
 
 export class Room {
-  id: string;
-  users: User[] = [];
-  host: User;
+  public id: string;
+  public users: User[] = [];
+  public host: User;
+  private match: Match | null;
 
   constructor(host: User) {
     this.id = randomUUID(); // Room id
     this.host = host;
     this.users.push(host);
+    this.match = null;
   }
 
   addPlayer(player: User) {
@@ -68,9 +70,13 @@ export class Room {
     }
   }
 
-  start() {
-    if (this.users.length === 0) return;
-    const match = new Match(this, this.users);
-    match.start();
+  startMatch() {
+    if (this.users.length === 0 || this.match) return;
+    this.match = new Match(this, this.users);
+    this.match.start();
+  }
+
+  endMatch() {
+    if (this.match) this.match.end();
   }
 }
