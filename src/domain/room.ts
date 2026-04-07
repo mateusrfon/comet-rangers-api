@@ -23,6 +23,7 @@ export class Room {
       type: "player_joined",
       data: {
         room: {
+          id: this.id,
           hostId: this.host.id,
           players: this.users.map((u, i) => ({
             id: u.id,
@@ -52,6 +53,7 @@ export class Room {
       type: "player_left",
       data: {
         room: {
+          id: this.id,
           hostId: this.host.id,
           players: this.users.map((u, i) => ({
             id: u.id,
@@ -73,10 +75,16 @@ export class Room {
   startMatch() {
     if (this.users.length === 0 || this.match) return;
     this.match = new Match(this, this.users);
+    this.users.forEach((user) => {
+      user.onMatch = true;
+    });
     this.match.start();
   }
 
   endMatch() {
     if (this.match) this.match.end();
+    this.users.forEach((user) => {
+      user.onMatch = false;
+    });
   }
 }

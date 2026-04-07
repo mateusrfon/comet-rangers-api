@@ -20,6 +20,7 @@ export type BulletDTO = EntityDTO;
 export type AsteroidDTO = EntityDTO;
 
 export type RoomInfo = {
+  id: string;
   hostId: string;
   players: { id: string; name: string }[];
 };
@@ -49,7 +50,7 @@ export type ClientMessage =
 
 export type ServerMessage =
   | { type: "user_connected"; data: { userId: string } }
-  | { type: "room_created"; data: { roomId: string } }
+  | { type: "room_created"; data: { room: RoomInfo } }
   | { type: "room_joined" }
   | { type: "room_not_found" }
   | { type: "room_left"; data: { roomId: string } }

@@ -12,6 +12,7 @@ export class User {
   public player?: Player | undefined;
   public roomManager: RoomManager;
   public ready = false;
+  public onMatch = false;
 
   constructor(
     private _connection: Connection,
@@ -57,7 +58,16 @@ export class User {
     switch (msg.type) {
       case "create_room": {
         const roomId = this.roomManager.createRoom(this);
-        this.send({ type: "room_created", data: { roomId } });
+        this.send({
+          type: "room_created",
+          data: {
+            room: {
+              id: roomId,
+              hostId: this.id,
+              players: [{ id: this.id, name: `Player ${this.id}` }],
+            },
+          },
+        });
         break;
       }
 
