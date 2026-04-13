@@ -2,7 +2,9 @@ import { Asteroid } from "../entities/asteroid";
 import { Bullet } from "../entities/bullet";
 import { Entity } from "../entities/entity";
 import { Player } from "../entities/player";
+import { PowerUp } from "../entities/powerUp";
 import { State } from "../state";
+import { PowerUpSystem } from "./powerUpSystem";
 
 type CollisionEvent =
   | {
@@ -21,11 +23,17 @@ type CollisionEvent =
       type: "bullet-asteroid";
       bullet: Bullet;
       asteroid: Asteroid;
+    }
+  | {
+      type: "player-powerUp";
+      player: Player;
+      powerUp: PowerUp;
     };
 
 export class CollisionSystem {
   constructor(
     private state: State,
+    private powerUpSystem: PowerUpSystem,
     private worldWidth: number,
     private worldHeight: number,
   ) {}
@@ -52,6 +60,11 @@ export class CollisionSystem {
             collision.hitY,
           );
           break;
+        }
+        case "player-powerUp": {
+          const powerUp = collision.powerUp;
+          powerUp.consume();
+          this.powerUpSystem.addShield(collision.player, powerUp.type);
         }
       }
     }
@@ -133,13 +146,6 @@ export class CollisionSystem {
             v2.y,
           );
           if (intersection) {
-            const dirX = bullet.vx;
-            const dirY = bullet.vy;
-
-            const force = 0.5;
-            const impulseX = dirX * force;
-            const impulseY = dirY * force;
-
             result.push({
               type: "player-bullet",
               bullet,
@@ -149,6 +155,24 @@ export class CollisionSystem {
             });
             break;
           }
+        }
+      }
+      // Check player-powerUp collisions
+      for (const powerUp of this.state.powerUps) {
+        if (!powerUp.getIsAlive()) continue;
+        if (
+          this.circleVsPolygonCollision(
+            powerUp.x,
+            powerUp.y,
+            powerUp.size,
+            playerVertices,
+          )
+        ) {
+          result.push({
+            type: "player-powerUp",
+            powerUp,
+            player,
+          });
         }
       }
     }

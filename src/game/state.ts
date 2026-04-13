@@ -2,15 +2,7 @@ import { GameStateDTO } from "../network/protocol";
 import type { Asteroid } from "./entities/asteroid";
 import type { Bullet } from "./entities/bullet";
 import type { Player } from "./entities/player";
-
-export type GameState = {
-  tick: number;
-  players: Player[];
-  bullets: Bullet[];
-  asteroids: Asteroid[];
-  level: number;
-  gameOver: boolean;
-};
+import { PowerUp } from "./entities/powerUp";
 
 export class State {
   tick = 0;
@@ -18,6 +10,7 @@ export class State {
   players: Map<string, Player> = new Map(); // convert to Array.from(state.players.values()) is better for JSON.stringify apparently
   bullets: Bullet[] = [];
   asteroids: Asteroid[] = [];
+  powerUps: PowerUp[] = [];
 
   level: number = 0;
   gameOver = false;
@@ -39,8 +32,16 @@ export class State {
       tick: this.tick,
       players: Array.from(this.players.values()).map((player) => {
         return {
-          ...player,
+          type: player.type,
+          x: player.x,
+          y: player.y,
+          size: player.size,
           isAlive: player.getIsAlive(),
+          id: player.id,
+          angle: player.angle,
+          life: player.life,
+          score: player.score,
+          shield: player.shield,
         };
       }),
       bullets: this.bullets.map((bullet) => ({
@@ -57,18 +58,15 @@ export class State {
         size: asteroid.size,
         isAlive: asteroid.getIsAlive(),
       })),
+      powerUps: this.powerUps.map((powerUp) => ({
+        type: "asteroid",
+        x: powerUp.x,
+        y: powerUp.y,
+        size: powerUp.size,
+        isAlive: powerUp.getIsAlive(),
+      })),
       level: this.level,
     };
     return data;
   }
 }
-
-// to client
-/*
-{
-  tick: number
-  players: {id,x,y,rotation}[]
-  bullets: {x,y,vx,vy}[]
-  asteroids: {x,y}[]
-}
-   */

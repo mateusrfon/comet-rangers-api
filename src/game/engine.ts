@@ -3,7 +3,9 @@ import { Match } from "./match";
 import { State } from "./state";
 import { CleanupSystem } from "./systems/cleanupSystem";
 import { CollisionSystem } from "./systems/collisionSystem";
+import { InputSystem } from "./systems/inputSystem";
 import { PhysicsSystem } from "./systems/physicsSystem";
+import { PowerUpSystem } from "./systems/powerUpSystem";
 import { ShootingSystem } from "./systems/shootingSystem";
 import { SpawnSystem } from "./systems/spawnSystem";
 
@@ -22,6 +24,8 @@ export class GameEngine {
   private cleanupSystem: CleanupSystem;
   private spawnSystem: SpawnSystem;
   private shootingSystem = new ShootingSystem(this.state);
+  private powerUpSystem = new PowerUpSystem(this.state);
+  private inputSystem = new InputSystem(this.state);
 
   constructor(
     private match: Match,
@@ -31,13 +35,12 @@ export class GameEngine {
     this.physicsSystem = new PhysicsSystem(this.state, worldWidth, worldHeight);
     this.collisionSystem = new CollisionSystem(
       this.state,
+      this.powerUpSystem,
       this.worldWidth,
       this.worldHeight,
     );
     this.cleanupSystem = new CleanupSystem(this.state);
     this.spawnSystem = new SpawnSystem(this.state);
-
-    this.immediate = setImmediate(() => this.loop());
   }
 
   start() {
@@ -66,10 +69,14 @@ export class GameEngine {
       this.update();
       this.accumulator -= this.tick_interval;
     }
+
+    this.immediate = setImmediate(() => this.loop());
   }
 
   private update() {
     // 1. Update physics
+    this.inputSystem.updateLastInput();
+    this.powerUpSystem.usePowerUp();
     this.physicsSystem.updatePositions();
     this.shootingSystem.shootBullets();
     // 2. Detect and resolve collisions
@@ -79,7 +86,7 @@ export class GameEngine {
     this.spawnSystem.splitAsteroid();
     this.spawnSystem.respawnPlayers();
     // 4. Cleanup entities
-    this.cleanupSystem.checkBulletLifetime();
+    this.cleanupSystem.checkLifetime();
     this.cleanupSystem.cleanupEntities();
     // 5. Check game status
     this.state.checkGameStatus();

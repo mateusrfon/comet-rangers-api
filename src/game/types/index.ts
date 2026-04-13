@@ -4,6 +4,7 @@ export type Input = {
   left: boolean;
   right: boolean;
   shoot: boolean;
+  powerUp: boolean;
 };
 
 export type InputState = Input[];

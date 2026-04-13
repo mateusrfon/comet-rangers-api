@@ -4,6 +4,8 @@ import { State } from "../state";
 import { User } from "../../domain/user";
 import { Player } from "../entities/player";
 import { LevelDefinition } from "../levels";
+import { PowerUpType } from "../entities/entity";
+import { PowerUp } from "../entities/powerUp";
 
 export class SpawnSystem {
   constructor(private state: State) {}
@@ -55,6 +57,30 @@ export class SpawnSystem {
     });
   }
 
+  private shouldDropPowerUp() {
+    const spawnChance = 0.1;
+
+    if (Math.random() < spawnChance) return true;
+    return false;
+  }
+
+  private randomFromArray(arr: any[]) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  private spawnPowerUp(x: number, y: number, size: number) {
+    // const powerUpTypes: PowerUpType[] = [
+    //   "powerUp-shield",
+    //   "powerUp-teleport",
+    //   "powerUp-repulsion",
+    // ];
+
+    // const type = this.randomFromArray(Object.keys(powerUpTypes)) as PowerUpType;
+    this.state.powerUps.push(
+      new PowerUp("powerUp-shield", x, y, size, this.state.tick),
+    );
+  }
+
   public splitAsteroid() {
     this.state.asteroids.forEach((a) => {
       if (a.shouldSplit()) {
@@ -74,6 +100,8 @@ export class SpawnSystem {
           a.angle - Math.PI / 8,
         );
         this.state.asteroids.push(a2);
+
+        if (this.shouldDropPowerUp()) this.spawnPowerUp(a.x, a.y, 25);
       }
     });
   }

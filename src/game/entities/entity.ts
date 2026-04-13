@@ -1,4 +1,9 @@
-export type EntityType = "player" | "bullet" | "asteroid";
+export type PowerUpType =
+  | "powerUp-shield"
+  | "powerUp-teleport"
+  | "powerUp-repulsion";
+
+export type EntityType = "player" | "bullet" | "asteroid" | PowerUpType;
 
 export abstract class Entity {
   readonly type: EntityType;

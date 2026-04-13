@@ -20,13 +20,7 @@ export class PhysicsSystem {
 
   private updatePlayerPosition() {
     for (const player of this.state.players.values()) {
-      // Check and apply inputs
-      const input = player.inputQueue.shift();
       if (!player.getIsAlive()) continue;
-
-      if (input) {
-        player.lastInput = input;
-      }
 
       if (player.lastInput.left && !player.lastInput.right) {
         player.angle -= player.rotationSpeed;
@@ -89,9 +83,3 @@ export class PhysicsSystem {
     entity.y = (entity.y + height) % height;
   }
 }
-
-// input to player velocity + shoot check
-// physics update positions (maybe boundaries and collision in her)
-// boundaries
-// handle collisions
-// clean entities

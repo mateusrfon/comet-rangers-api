@@ -13,11 +13,18 @@ export type PlayerDTO = EntityDTO & {
   angle: number;
   life: number;
   score: number;
+  shield: {
+    active: boolean;
+    duration: number;
+    size: number;
+  };
 };
 
 export type BulletDTO = EntityDTO;
 
 export type AsteroidDTO = EntityDTO;
+
+export type PowerUpDTO = EntityDTO;
 
 export type RoomInfo = {
   id: string;
@@ -30,6 +37,7 @@ export type GameStateDTO = {
   players: PlayerDTO[];
   bullets: BulletDTO[];
   asteroids: AsteroidDTO[];
+  powerUps: PowerUpDTO[];
   level: number;
 };
 
@@ -46,6 +54,7 @@ export type ClientMessage =
       left: boolean;
       right: boolean;
       shoot: boolean;
+      powerUp: boolean;
     };
 
 export type ServerMessage =

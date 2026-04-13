@@ -10,6 +10,17 @@ type PlayerConfig = {
   rot?: number;
   life?: number;
 };
+type PolygonCollider = {
+  type: "polygon";
+  points: { x: number; y: number }[];
+};
+
+type CircleCollider = {
+  type: "circle";
+  radius: number;
+};
+
+type Collider = PolygonCollider | CircleCollider;
 
 export class Player extends Entity {
   id: string;
@@ -20,6 +31,7 @@ export class Player extends Entity {
     left: false,
     right: false,
     shoot: false,
+    powerUp: false,
   };
 
   life: number;
@@ -41,6 +53,9 @@ export class Player extends Entity {
   public angularVelocity = 0;
 
   private localVertices: { x: number; y: number }[];
+
+  public collider: Collider;
+  public shield = { active: false, duration: 0, size: 0 };
 
   constructor({
     id,
@@ -65,6 +80,7 @@ export class Player extends Entity {
       { x: -this.size, y: -this.size / 1.5 }, // right
     ];
     this.spawn = { x, y, angle };
+    this.collider = { type: "polygon", points: this.localVertices };
   }
 
   public registerLastShot(tick: number) {
@@ -93,6 +109,10 @@ export class Player extends Entity {
   }
 
   public takeDamage(tick: number) {
+    if (this.shield.active) {
+      // emit shield damage event
+      return;
+    }
     this.deathTick = tick;
     super.setIsAlive(false);
   }
@@ -112,5 +132,24 @@ export class Player extends Entity {
     this.vx = 0;
     this.vy = 0;
     this.angularVelocity = 0;
+  }
+
+  public addShield(shield: { duration: number; size: number }) {
+    this.shield = {
+      active: false,
+      duration: shield.duration,
+      size: shield.size,
+    };
+  }
+
+  public activateShield() {
+    if (this.shield.duration <= 0) return;
+    this.shield.active = true;
+    this.collider = { type: "circle", radius: this.shield.size };
+  }
+
+  public deactivateShield() {
+    this.shield.active = false;
+    this.collider = { type: "polygon", points: this.localVertices };
   }
 }

@@ -43,12 +43,8 @@ export class User {
   }
 
   private isSameInput(a: Input, b: Input): boolean {
-    return (
-      a.up === b.up &&
-      a.down === b.down &&
-      a.left === b.left &&
-      a.right === b.right &&
-      a.shoot === b.shoot
+    return (Object.keys(a) as (keyof Input)[]).every(
+      (key) => a[key] === b[key],
     );
   }
 
@@ -107,6 +103,7 @@ export class User {
             right: msg.right,
             left: msg.left,
             shoot: msg.shoot,
+            powerUp: msg.powerUp,
           });
         }
         break;
